@@ -1,2 +1,4 @@
 # gray-scott-model
-Gray-Scott reaction diffusion model using WebGL2
+
+JavaScriptとWebGL2を使ってGray-Scottモデルを実装しました。
+[ブログ](http://mitaka.boo.jp/articles/article17)でも紹介しています。
