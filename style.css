@@ -1,0 +1,59 @@
+.wrapper {
+    padding-top: 0.2em;
+    padding-left: 40px;
+    padding-right: 40px;
+    background-color: white;
+    margin: 0;
+}
+.main_contents {
+    display: flex;
+    padding: 1em;
+}
+.ctrl_panel {
+    padding: 0 2em;
+    width: 100%;
+    max-width: 450px;
+    align-self: flex-start;
+}
+#canvas {
+    background-color: white;
+    border: 1px solid black;
+    align-self: flex-start;
+}
+.button_div {
+    display: flex;
+    margin-bottom: 1em;
+}
+.button_div button {
+    flex: 1 1 50%;
+    margin: 0 0.1em;
+}
+.slider {
+    margin: 0.2em 0;
+}
+#preset_select {
+    width: 100%;
+    height: 1.6em;
+}
+.bold {
+    font-weight: bold;
+}
+
+@media screen and (max-width: 849px) {
+.wrapper {
+    padding-left: 1em;
+    padding-right: 1em;
+}
+.main_contents {
+    display: block;
+}
+.ctrl_panel {
+    padding: 0;
+}
+#canvas {
+    max-width: 450px;
+    max-height: 450px;
+    width: 100%;
+    margin-bottom: 2em;
+}
+}

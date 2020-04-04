@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Gray-Scott Reaction Diffusion Model</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="gray_scott_visualizer.js"></script>
+    <script type="text/javascript" src="main.js"></script>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="main_contents">
+            <div id="canvas_panel">
+                <canvas id="canvas" width="450" height="450">Please enable JavaScript in your browser</canvas>
+            </div>
+            <div class="ctrl_panel">
+                <div class="button_div">
+                    <button id="init_btn" type="button"></button>
+                    <button id="ctrl_btn" type="button"></button>
+                </div>
+                <p class="bold">presets</p>
+                <select id="preset_select" class="ui-corner-all">
+                    <option value="0">stripe</option>
+                    <option value="1">spots</option>
+                    <option value="2">wandering bubbles</option>
+                    <option value="3">waves</option>
+                    <option value="4">amorphous</option>
+                    <option value="5">bumps</option>
+                    <option value="6">waving spots</option>
+                    <option value="7">snapping strings</option>
+                    <option value="8">balloons</option>
+                </select>
+                <p><span class="bold">Feed: </span><span id="feed_span"></span></p>
+                <div id="feed_slider" class="slider"></div>
+                <p><span class="bold">Kill: </span><span id="kill_span"></span></p>
+                <div id="kill_slider" class="slider"></div>
+            </div>            
+        </div> 
+    </div>
+</body>
+</html>
