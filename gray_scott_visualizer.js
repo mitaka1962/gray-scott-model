@@ -30,7 +30,7 @@ class GrayScottVisualizer {
 
         void main() {
             float r = texture(uDrawTex, vTexCoord).r;
-            // float g = texture(uDrawTex, vTexCoord).g;
+            float g = texture(uDrawTex, vTexCoord).g;
             outColor = vec4(r, r, r, 1.0);
         }`;
 
@@ -45,31 +45,48 @@ class GrayScottVisualizer {
         uniform float feed;
         uniform float kill;
 
+        uniform int uBoundaryCondition;
+        uniform vec2 uTextureSize;
+        uniform sampler2D uUpdateTex;
+
         in vec2 vTexCoord;
 
         out vec2 outState;
 
-        uniform vec2 uTextureSize;
-        uniform sampler2D uUpdateTex;
-
         void main() {
-            vec2 step = 1.0 / uTextureSize;
+            vec2 onePixel = 1.0 / uTextureSize;
             
             // calculate laplacian
-            float dec_x = vTexCoord.x - step.x;
-            float inc_x = vTexCoord.x + step.x;
-            float dec_y = vTexCoord.y - step.y;
-            float inc_y = vTexCoord.y + step.y;
-            dec_x = (dec_x < 0.0) ? dec_x + 1.0 : dec_x;
-            inc_x = (inc_x > 1.0) ? inc_x - 1.0 : inc_x;
-            dec_y = (dec_y < 0.0) ? dec_y + 1.0 : dec_y;
-            inc_y = (inc_y > 1.0) ? inc_y - 1.0 : inc_y;
+            float dec_x = vTexCoord.x - onePixel.x;
+            float inc_x = vTexCoord.x + onePixel.x;
+            float dec_y = vTexCoord.y - onePixel.y;
+            float inc_y = vTexCoord.y + onePixel.y;
+
+            float p_dec_x = (dec_x < 0.0) ? dec_x + 1.0 : dec_x;
+            float p_inc_x = (inc_x > 1.0) ? inc_x - 1.0 : inc_x;
+            float p_dec_y = (dec_y < 0.0) ? dec_y + 1.0 : dec_y;
+            float p_inc_y = (inc_y > 1.0) ? inc_y - 1.0 : inc_y;
 
             vec2 uv = texture(uUpdateTex, vTexCoord).rg;
-            vec2 uv1 = texture(uUpdateTex, vec2(dec_x, vTexCoord.y)).rg;
-            vec2 uv2 = texture(uUpdateTex, vec2(inc_x, vTexCoord.y)).rg;
-            vec2 uv3 = texture(uUpdateTex, vec2(vTexCoord.x, dec_y)).rg;
-            vec2 uv4 = texture(uUpdateTex, vec2(vTexCoord.x, inc_y)).rg;
+            vec2 uv1 = texture(uUpdateTex, vec2(p_dec_x, vTexCoord.y)).rg;
+            vec2 uv2 = texture(uUpdateTex, vec2(p_inc_x, vTexCoord.y)).rg;
+            vec2 uv3 = texture(uUpdateTex, vec2(vTexCoord.x, p_dec_y)).rg;
+            vec2 uv4 = texture(uUpdateTex, vec2(vTexCoord.x, p_inc_y)).rg;
+
+            if (uBoundaryCondition == 1) {
+                // dirichlet boundary condition
+                uv1 = (dec_x < 0.0) ? vec2(1.0, 0.0) : uv1;
+                uv2 = (inc_x > 1.0) ? vec2(1.0, 0.0) : uv2;
+                uv3 = (dec_y < 0.0) ? vec2(1.0, 0.0) : uv3;
+                uv4 = (inc_y > 1.0) ? vec2(1.0, 0.0) : uv4;
+            } else if (uBoundaryCondition == 2) {
+                // neumann boundary condition
+                uv1 = (dec_x < 0.0) ? uv : uv1;
+                uv2 = (inc_x > 1.0) ? uv : uv2;
+                uv3 = (dec_y < 0.0) ? uv : uv3;
+                uv4 = (inc_y > 1.0) ? uv : uv4;
+            }
+
             vec2 lap_uv = (uv1 + uv2 + uv3 + uv4 - 4.0*uv) / (dx*dx);
 
             float du = Du*lap_uv.r - uv.r*uv.g*uv.g + feed*(1.0 - uv.r);
@@ -108,6 +125,7 @@ class GrayScottVisualizer {
                 'Dv': this.gl.getUniformLocation(this.updateShaderProgram, "Dv"),
                 'feed': this.gl.getUniformLocation(this.updateShaderProgram, "feed"),
                 'kill': this.gl.getUniformLocation(this.updateShaderProgram, "kill"),
+                'uBoundaryCondition': this.gl.getUniformLocation(this.updateShaderProgram, "uBoundaryCondition"),
                 'uTextureSize': this.gl.getUniformLocation(this.updateShaderProgram, "uTextureSize"),
                 'uUpdateTex': this.gl.getUniformLocation(this.updateShaderProgram, "uUpdateTex"),
             }
@@ -266,6 +284,7 @@ class GrayScottVisualizer {
         this.gl.uniform1f(this.updateProgramLocations.uniform.Dv, this.params.Dv);
         this.gl.uniform1f(this.updateProgramLocations.uniform.feed, this.params.feed);
         this.gl.uniform1f(this.updateProgramLocations.uniform.kill, this.params.kill);
+        this.gl.uniform1i(this.updateProgramLocations.uniform.uBoundaryCondition, this.params.boundary_condition);
         this.gl.uniform2f(this.updateProgramLocations.uniform.uTextureSize,
                           this.params.width, this.params.height);
     }

@@ -10,7 +10,12 @@ $(function() {
         { feed: 0.025, kill: 0.060 },   // waving spots
         { feed: 0.030, kill: 0.060 },   // snapping strings
         { feed: 0.011, kill: 0.046 }    // balloons
-    ]
+    ];
+    const boundary_condition = {
+        'periodic': 0,
+        'dirichlet': 1,
+        'neumann': 2,
+    };
     const default_preset = 0;
     const params = {
         'width': 512,
@@ -21,6 +26,7 @@ $(function() {
         'Dv': 1e-5,
         'feed': presets[default_preset].feed,
         'kill': presets[default_preset].kill,
+        'boundary_condition': boundary_condition.periodic,
     };
 
     const gl = document.getElementById("canvas").getContext("webgl2");
