@@ -11,11 +11,6 @@ $(function() {
         { feed: 0.030, kill: 0.060 },   // snapping strings
         { feed: 0.011, kill: 0.046 }    // balloons
     ];
-    const boundary_condition = {
-        'periodic': 0,
-        'dirichlet': 1,
-        'neumann': 2,
-    };
     const default_preset = 0;
     const params = {
         'width': 512,
@@ -26,12 +21,12 @@ $(function() {
         'Dv': 1e-5,
         'feed': presets[default_preset].feed,
         'kill': presets[default_preset].kill,
-        'boundary_condition': boundary_condition.periodic,
+        'boundary_condition': 0,    // 0: periodic, 1: dirichlet, 2: neumann
     };
 
-    const gl = document.getElementById("canvas").getContext("webgl2");
+    const gl = document.getElementById('canvas').getContext('webgl2');
     if (!gl) {
-        alert("Unable to initialize WebGL2. Make sure your browser or machine supports it.");
+        alert('Unable to initialize WebGL2. Make sure your browser or machine supports it.');
         return;
     }
     const visualizer = new GrayScottVisualizer(gl, params);
@@ -68,9 +63,9 @@ $(function() {
     }
 
     const initUI = function() {
-        $("#init_btn").button().click(function () {
+        $('#init_btn').button().click(function () {
             if (request_id === null) {
-                $("#ctrl_btn").text("停止");
+                $('#ctrl_btn').text('停止');
             } else {
                 cancelAnimationFrame(request_id);
                 request_id = null;
@@ -78,43 +73,47 @@ $(function() {
             visualizer.setTexture(createInitTexture());
             request_id = requestAnimationFrame(render);
         });
-        $("#init_btn").text("初期化");
+        $('#init_btn').text('初期化');
 
-        $("#ctrl_btn").button().click(function () {
+        $('#ctrl_btn').button().click(function () {
             if (request_id === null) {
                 request_id = requestAnimationFrame(render);
-                $("#ctrl_btn").text("停止");
+                $('#ctrl_btn').text('停止');
             } else {
                 cancelAnimationFrame(request_id);
                 request_id = null;
-                $("#ctrl_btn").text("再開");
+                $('#ctrl_btn').text('再開');
             }
         });
-        $("#ctrl_btn").text("停止");
+        $('#ctrl_btn').text('停止');
 
-        $("#preset_select").change(function (event) {
-            $("#feed_slider").slider("value", presets[event.target.value].feed);
-            $("#kill_slider").slider("value", presets[event.target.value].kill);
+        $('#preset_select').change(function (event) {
+            $('#feed_slider').slider('value', presets[event.target.value].feed);
+            $('#kill_slider').slider('value', presets[event.target.value].kill);
         });
-        $("#preset_select").val(default_preset);
+        $('#preset_select').val(default_preset);
 
-        $("#feed_slider").slider({
+        $('#feed_slider').slider({
             value: params.feed, min: 0.000, max: 0.050, step: 0.001,
             change: function (event, ui) {params.feed = ui.value;
-                                          $("#feed_span").text(params.feed.toFixed(3));},
+                                          $('#feed_span').text(params.feed.toFixed(3));},
             slide: function (event, ui) {params.feed = ui.value;
-                                         $("#feed_span").text(params.feed.toFixed(3));}
+                                         $('#feed_span').text(params.feed.toFixed(3));}
         });
-        $("#feed_slider").slider("value", params.feed);
+        $('#feed_slider').slider('value', params.feed);
 
-        $("#kill_slider").slider({
+        $('#kill_slider').slider({
             value: params.kill, min: 0.040, max: 0.075, step: 0.001,
             change: function (event, ui) {params.kill = ui.value;
-                                          $("#kill_span").text(params.kill.toFixed(3));},
+                                          $('#kill_span').text(params.kill.toFixed(3));},
             slide: function (event, ui) {params.kill = ui.value;
-                                         $("#kill_span").text(params.kill.toFixed(3));}
+                                         $('#kill_span').text(params.kill.toFixed(3));}
         });
-        $("#kill_slider").slider("value", params.kill);
+        $('#kill_slider').slider('value', params.kill);
+        $('input[name="condition"]').change(function (event) {
+            params.boundary_condition = event.target.value;
+        });
+        $('input[name="condition"][value=' + params.boundary_condition +']').prop('checked', true);
     }
 
     initUI();

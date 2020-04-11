@@ -35,6 +35,12 @@
     width: 100%;
     height: 1.6em;
 }
+.radio_box {
+    display: flex;
+}
+.radio_button {
+    margin-right: 2em;
+}
 .bold {
     font-weight: bold;
 }

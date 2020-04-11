@@ -21,7 +21,7 @@
                     <button id="init_btn" type="button"></button>
                     <button id="ctrl_btn" type="button"></button>
                 </div>
-                <p class="bold">presets</p>
+                <p class="bold">Presets</p>
                 <select id="preset_select" class="ui-corner-all">
                     <option value="0">stripe</option>
                     <option value="1">spots</option>
@@ -37,6 +37,12 @@
                 <div id="feed_slider" class="slider"></div>
                 <p><span class="bold">Kill: </span><span id="kill_span"></span></p>
                 <div id="kill_slider" class="slider"></div>
+                <p><span class="bold">Boundary condition</span></p>
+                <div class="radio_box">
+                    <div class="radio_button"><input type="radio" name="condition" value="0">Periodic</div>
+                    <div class="radio_button"><input type="radio" name="condition" value="1">Dirichlet</div>
+                    <div class="radio_button"><input type="radio" name="condition" value="2">Neumann</div>
+                </div>
             </div>            
         </div> 
     </div>
