@@ -65,7 +65,7 @@ $(function() {
     const initUI = function() {
         $('#init_btn').button().click(function () {
             if (request_id === null) {
-                $('#ctrl_btn').text('停止');
+                $('#ctrl_btn').text('Pause');
             } else {
                 cancelAnimationFrame(request_id);
                 request_id = null;
@@ -73,19 +73,19 @@ $(function() {
             visualizer.setTexture(createInitTexture());
             request_id = requestAnimationFrame(render);
         });
-        $('#init_btn').text('初期化');
+        $('#init_btn').text('Init');
 
         $('#ctrl_btn').button().click(function () {
             if (request_id === null) {
                 request_id = requestAnimationFrame(render);
-                $('#ctrl_btn').text('停止');
+                $('#ctrl_btn').text('Pause');
             } else {
                 cancelAnimationFrame(request_id);
                 request_id = null;
-                $('#ctrl_btn').text('再開');
+                $('#ctrl_btn').text('Play');
             }
         });
-        $('#ctrl_btn').text('停止');
+        $('#ctrl_btn').text('Pause');
 
         $('#preset_select').change(function (event) {
             $('#feed_slider').slider('value', presets[event.target.value].feed);
