@@ -6,7 +6,23 @@ class GrayScottVisualizer {
         this.gl.getExtension('EXT_color_buffer_float');
         this.gl.getExtension('OES_texture_float_linear');
 
-        const vsSource = 
+        const drawVsSource = 
+        `#version 300 es
+        in vec4 aVertexPosition;
+        in vec2 aTexCoord;
+
+        uniform mat4 uModelMatrix;
+        uniform mat4 uViewMatrix;
+        uniform mat4 uProjectionMatrix;
+
+        out vec2 vTexCoord;
+        
+        void main() {
+            gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix * aVertexPosition;
+            vTexCoord = aTexCoord;
+        }`;
+
+        const updateVsSource = 
         `#version 300 es
         in vec4 aVertexPosition;
         in vec2 aTexCoord;
@@ -102,14 +118,17 @@ class GrayScottVisualizer {
             outState = vec2(u, v);
         }`;
 
-        this.drawShaderProgram = this._initShaderProgram(vsSource, drawFsSource);
-        this.updateShaderProgram = this._initShaderProgram(vsSource, updateFsSource);
+        this.drawShaderProgram = this._initShaderProgram(drawVsSource, drawFsSource);
+        this.updateShaderProgram = this._initShaderProgram(updateVsSource, updateFsSource);
         this.drawProgramLocations = {
             'attribute': {
                 'aVertexPosition': this.gl.getAttribLocation(this.drawShaderProgram, "aVertexPosition"),
                 'aTexCoord': this.gl.getAttribLocation(this.drawShaderProgram, "aTexCoord"),
             },
             'uniform': {
+                'uModelMatrix': this.gl.getUniformLocation(this.drawShaderProgram, "uModelMatrix"),
+                'uViewMatrix': this.gl.getUniformLocation(this.drawShaderProgram, "uViewMatrix"),
+                'uProjectionMatrix': this.gl.getUniformLocation(this.drawShaderProgram, "uProjectionMatrix"),
                 'uDrawTex': this.gl.getUniformLocation(this.drawShaderProgram, "uDrawTex"),
             }
         }
@@ -177,6 +196,26 @@ class GrayScottVisualizer {
         this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
         this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+
+        const modelMatrix = glMatrix.mat4.create();
+        
+        const viewMatrix = glMatrix.mat4.create();
+        glMatrix.mat4.lookAt(viewMatrix,
+                    [2, 2, 2],
+                    [0, 0, 0],
+                    [0, 1, 0]);
+
+        const projectionMatrix = glMatrix.mat4.create();
+        glMatrix.mat4.perspective(projectionMatrix,
+                         45 * Math.PI / 180,
+                         this.gl.canvas.clientWidth / this.gl.canvas.clientHeight,
+                         0.1,
+                         100);
+
+        this.gl.uniformMatrix4fv(this.drawProgramLocations.uniform.uModelMatrix, false, modelMatrix);
+        this.gl.uniformMatrix4fv(this.drawProgramLocations.uniform.uViewMatrix, false, viewMatrix);
+        this.gl.uniformMatrix4fv(this.drawProgramLocations.uniform.uProjectionMatrix, false, projectionMatrix);
+
         this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
     }
 
