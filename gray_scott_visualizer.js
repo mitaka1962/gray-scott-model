@@ -24,14 +24,43 @@ class GrayScottVisualizer {
         
         in vec2 vTexCoord;
 
+        uniform int uTarget;
+        uniform vec2 uTextureSize;
+
         out vec4 outColor;
 
         uniform sampler2D uDrawTex;
 
+        float getValue(vec2 coord) {
+            return texture(uDrawTex, coord).r;
+            // if (uTarget == 0) {
+            //     return texture(uDrawTex, coord).r;
+            // } else if (uTarget == 1) {
+            //     return texture(uDrawTex, coord).g;
+            // } else {
+            //     return texture(uDrawTex, coord).r;
+            // }
+        }
+
         void main() {
-            float r = texture(uDrawTex, vTexCoord).r;
-            float g = texture(uDrawTex, vTexCoord).g;
-            outColor = vec4(r, r, r, 1.0);
+            vec2 onePixel = 1.0 / vec2(512.0, 512.0);
+
+            float left = getValue(vTexCoord - vec2(onePixel.x, 0.0));
+            float right = getValue(vTexCoord + vec2(onePixel.x, 0.0));
+            float down = getValue(vTexCoord - vec2(0.0, onePixel.y));
+            float up = getValue(vTexCoord + vec2(0.0, onePixel.y));
+
+            vec3 dx = vec3(1.0, 0.0, (right - left) / (2.0 * 0.08));
+            vec3 dy = vec3(0.0, 1.0, (up - down) / (2.0 * 0.08));
+
+            vec3 light1 = vec3(1.0, 1.0, 1.0);
+            float l = 1.2 * dot(normalize(cross(dx, dy)), normalize(light1));
+            vec3 light2 = vec3(-0.3, -1.0, 0.5);
+            l += 0.5 * dot(normalize(cross(dx, dy)), normalize(light2));
+            l = clamp(l, 0.0, 1.0);
+            vec3 color = mix(vec3(0.667, 0.502, 0.361), vec3(1.0, 0.88, 0.79), l);
+            // vec3 color = vec3(l);
+            outColor = vec4(color, 1.0);
         }`;
 
         const updateFsSource =
@@ -181,9 +210,11 @@ class GrayScottVisualizer {
     }
 
     setTexture(source) {
-        this.gl.bindTexture(this.gl.TEXTURE_2D, this.textures[0]);
-        this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RG32F, this.params.width, this.params.height, 0, 
+        for (let i = 0; i < this.textures.length; i++) {
+            this.gl.bindTexture(this.gl.TEXTURE_2D, this.textures[i]);
+            this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RG32F, this.params.width, this.params.height, 0, 
                             this.gl.RG, this.gl.FLOAT, source);
+        }
         this.gl.bindTexture(this.gl.TEXTURE_2D, null);
     }
 
