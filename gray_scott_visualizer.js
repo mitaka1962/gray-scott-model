@@ -52,15 +52,24 @@ class GrayScottVisualizer {
 
             vec3 dx = vec3(1.0, 0.0, (right - left) / (2.0 * 0.08));
             vec3 dy = vec3(0.0, 1.0, (up - down) / (2.0 * 0.08));
+            vec3 normal = normalize(cross(dx, dy));
 
-            vec3 light1 = vec3(1.0, 1.0, 1.0);
-            float l = 1.2 * dot(normalize(cross(dx, dy)), normalize(light1));
-            vec3 light2 = vec3(-0.3, -1.0, 0.5);
-            l += 0.5 * dot(normalize(cross(dx, dy)), normalize(light2));
-            l = clamp(l, 0.0, 1.0);
-            vec3 color = mix(vec3(0.667, 0.502, 0.361), vec3(1.0, 0.88, 0.79), l);
-            // vec3 color = vec3(l);
-            outColor = vec4(color, 1.0);
+            vec3 light1 = normalize(vec3(1.0, 1.0, 1.0));
+            float diffuse = max(1.2 * dot(normal, light1), 0.0);
+            vec3 light2 = normalize(vec3(-0.8, -1.2, 0.4));
+            diffuse += max(0.4 * dot(normal, light2), 0.0);
+            diffuse = clamp(diffuse, 0.0, 1.0);
+            vec3 color = mix(vec3(0.667, 0.502, 0.361), vec3(1.0, 0.88, 0.79), diffuse);
+            // vec3 color = mix(vec3(0.169, 0.451, 0.588), vec3(0.467, 0.722, 0.855), diffuse);
+            // vec3 color = mix(vec3(0.168, 0.447, 0.588), vec3(0.733, 0.859, 0.922), diffuse);
+            // vec3 color = vec3(1.0, 0.88, 0.79) * diffuse;
+            // vec3 color = vec3(1.0) * diffuse;
+            
+            vec3 reflect = reflect(-light1, normal);
+            vec3 eye = vec3(0.0, 0.0, 1.0);
+            float x = 100.0;
+            color += pow(max(0.0, dot(eye, reflect)), x) * tanh(x / 50.0);
+            outColor = vec4(clamp(color, 0.0, 1.0), 1.0);
         }`;
 
         const updateFsSource =
