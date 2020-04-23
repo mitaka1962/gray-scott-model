@@ -22,6 +22,7 @@ $(function() {
         'feed': presets[default_preset].feed,
         'kill': presets[default_preset].kill,
         'boundary_condition': 0,    // 0: periodic, 1: dirichlet, 2: neumann
+        'target': 0,    // 0: draw u, 1: draw v
     };
 
     const gl = document.getElementById('canvas').getContext('webgl2');

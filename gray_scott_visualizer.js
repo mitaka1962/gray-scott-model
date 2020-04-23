@@ -25,50 +25,69 @@ class GrayScottVisualizer {
         in vec2 vTexCoord;
 
         uniform int uTarget;
+        uniform int uBoundaryCondition;
         uniform vec2 uTextureSize;
 
         out vec4 outColor;
 
         uniform sampler2D uDrawTex;
 
-        float getValue(vec2 coord) {
-            return texture(uDrawTex, coord).r;
-            // if (uTarget == 0) {
-            //     return texture(uDrawTex, coord).r;
-            // } else if (uTarget == 1) {
-            //     return texture(uDrawTex, coord).g;
-            // } else {
-            //     return texture(uDrawTex, coord).r;
-            // }
-        }
-
         void main() {
-            vec2 onePixel = 1.0 / vec2(512.0, 512.0);
+            vec2 onePixel = 1.0 / uTextureSize;
 
-            float left = getValue(vTexCoord - vec2(onePixel.x, 0.0));
-            float right = getValue(vTexCoord + vec2(onePixel.x, 0.0));
-            float down = getValue(vTexCoord - vec2(0.0, onePixel.y));
-            float up = getValue(vTexCoord + vec2(0.0, onePixel.y));
+            float dec_x = vTexCoord.x - onePixel.x;
+            float inc_x = vTexCoord.x + onePixel.x;
+            float dec_y = vTexCoord.y - onePixel.y;
+            float inc_y = vTexCoord.y + onePixel.y;
 
-            vec3 dx = vec3(1.0, 0.0, (right - left) / (2.0 * 0.08));
-            vec3 dy = vec3(0.0, 1.0, (up - down) / (2.0 * 0.08));
+            float p_dec_x = (dec_x < 0.0) ? dec_x + 1.0 : dec_x;
+            float p_inc_x = (inc_x > 1.0) ? inc_x - 1.0 : inc_x;
+            float p_dec_y = (dec_y < 0.0) ? dec_y + 1.0 : dec_y;
+            float p_inc_y = (inc_y > 1.0) ? inc_y - 1.0 : inc_y;
+
+            vec2 uv = texture(uDrawTex, vTexCoord).rg;
+            vec2 uv1 = texture(uDrawTex, vec2(p_dec_x, vTexCoord.y)).rg;
+            vec2 uv2 = texture(uDrawTex, vec2(p_inc_x, vTexCoord.y)).rg;
+            vec2 uv3 = texture(uDrawTex, vec2(vTexCoord.x, p_dec_y)).rg;
+            vec2 uv4 = texture(uDrawTex, vec2(vTexCoord.x, p_inc_y)).rg;
+
+            if (uBoundaryCondition == 1) {
+                // dirichlet boundary condition
+                uv1 = (dec_x < 0.0) ? vec2(1.0, 0.0) : uv1;
+                uv2 = (inc_x > 1.0) ? vec2(1.0, 0.0) : uv2;
+                uv3 = (dec_y < 0.0) ? vec2(1.0, 0.0) : uv3;
+                uv4 = (inc_y > 1.0) ? vec2(1.0, 0.0) : uv4;
+            } else if (uBoundaryCondition == 2) {
+                // neumann boundary condition
+                uv1 = (dec_x < 0.0) ? uv : uv1;
+                uv2 = (inc_x > 1.0) ? uv : uv2;
+                uv3 = (dec_y < 0.0) ? uv : uv3;
+                uv4 = (inc_y > 1.0) ? uv : uv4;
+            }
+
+            float left = (uTarget == 1) ? uv1.g : uv1.r;
+            float right = (uTarget == 1) ? uv2.g : uv2.r;
+            float down = (uTarget == 1) ? uv3.g : uv3.r;
+            float up = (uTarget == 1) ? uv4.g : uv4.r;
+
+            vec3 dx = vec3(1.0, 0.0, (right - left) / (2.0 * 0.06));
+            vec3 dy = vec3(0.0, 1.0, (up - down) / (2.0 * 0.06));
             vec3 normal = normalize(cross(dx, dy));
 
             vec3 light1 = normalize(vec3(1.0, 1.0, 1.0));
-            float diffuse = max(1.2 * dot(normal, light1), 0.0);
+            float diffuse = max(1.0 * dot(normal, light1), 0.0);
             vec3 light2 = normalize(vec3(-0.8, -1.2, 0.4));
             diffuse += max(0.4 * dot(normal, light2), 0.0);
             diffuse = clamp(diffuse, 0.0, 1.0);
-            vec3 color = mix(vec3(0.667, 0.502, 0.361), vec3(1.0, 0.88, 0.79), diffuse);
-            // vec3 color = mix(vec3(0.169, 0.451, 0.588), vec3(0.467, 0.722, 0.855), diffuse);
-            // vec3 color = mix(vec3(0.168, 0.447, 0.588), vec3(0.733, 0.859, 0.922), diffuse);
-            // vec3 color = vec3(1.0, 0.88, 0.79) * diffuse;
-            // vec3 color = vec3(1.0) * diffuse;
+            // vec3 color = mix(vec3(0.63, 0.48, 0.3), vec3(1.0, 0.94, 0.89), diffuse);         // milky
+            vec3 color = mix(vec3(0.168, 0.447, 0.588), vec3(0.733, 0.859, 0.922), diffuse); // sky
+            // vec3 color = mix(vec3(0.1, 0.0, 0.3), vec3(0.75, 0.6, 1.0), diffuse);            // poison
+            // vec3 color = vec3(1.0) * diffuse;                                                // gray
             
             vec3 reflect = reflect(-light1, normal);
             vec3 eye = vec3(0.0, 0.0, 1.0);
-            float x = 100.0;
-            color += pow(max(0.0, dot(eye, reflect)), x) * tanh(x / 50.0);
+            float x = 25.0;
+            color += pow(max(0.0, dot(eye, reflect)), x) * tanh(x / 10.0);
             outColor = vec4(clamp(color, 0.0, 1.0), 1.0);
         }`;
 
@@ -149,6 +168,9 @@ class GrayScottVisualizer {
             },
             'uniform': {
                 'uDrawTex': this.gl.getUniformLocation(this.drawShaderProgram, "uDrawTex"),
+                'uTarget': this.gl.getUniformLocation(this.drawShaderProgram, "uTarget"),
+                'uBoundaryCondition': this.gl.getUniformLocation(this.drawShaderProgram, "uBoundaryCondition"),
+                'uTextureSize': this.gl.getUniformLocation(this.drawShaderProgram, "uTextureSize"),
             }
         }
         this.updateProgramLocations = {
@@ -211,6 +233,8 @@ class GrayScottVisualizer {
         this.gl.activeTexture(this.gl.TEXTURE0);
         this.gl.bindTexture(this.gl.TEXTURE_2D, this.textures[1]);
         this.gl.uniform1i(this.drawProgramLocations.uniform.uDrawTex, 0);
+
+        this._setDrawProgramUniforms();
 
         this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
         this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -326,6 +350,13 @@ class GrayScottVisualizer {
         this.gl.uniform1f(this.updateProgramLocations.uniform.kill, this.params.kill);
         this.gl.uniform1i(this.updateProgramLocations.uniform.uBoundaryCondition, this.params.boundary_condition);
         this.gl.uniform2f(this.updateProgramLocations.uniform.uTextureSize,
+                          this.params.width, this.params.height);
+    }
+
+    _setDrawProgramUniforms() {
+        this.gl.uniform1i(this.drawProgramLocations.uniform.uTarget, this.params.target);
+        this.gl.uniform1i(this.drawProgramLocations.uniform.uBoundaryCondition, this.params.boundary_condition);
+        this.gl.uniform2f(this.drawProgramLocations.uniform.uTextureSize,
                           this.params.width, this.params.height);
     }
 }
