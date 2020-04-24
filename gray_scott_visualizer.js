@@ -197,16 +197,16 @@ class GrayScottVisualizer {
         this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
 
-        const modelMatrix = glMatrix.mat4.create();
+        const modelMatrix = mat4.create();
         
-        const viewMatrix = glMatrix.mat4.create();
-        glMatrix.mat4.lookAt(viewMatrix,
+        const viewMatrix = mat4.create();
+        mat4.lookAt(viewMatrix,
                     [2, 2, 2],
                     [0, 0, 0],
                     [0, 1, 0]);
 
-        const projectionMatrix = glMatrix.mat4.create();
-        glMatrix.mat4.perspective(projectionMatrix,
+        const projectionMatrix = mat4.create();
+        mat4.perspective(projectionMatrix,
                          45 * Math.PI / 180,
                          this.gl.canvas.clientWidth / this.gl.canvas.clientHeight,
                          0.1,
