@@ -2,7 +2,7 @@
 
 JavaScriptとWebGL2を使ってGray-Scottモデルを実装しました。
 下記のリンクから実行できます。  
-<a href="https://mitaka1962.github.io/gray-scott-model/" target="_blank">Gray-Scott Model</a>
+[Gray-Scott Model](https://mitaka1962.github.io/gray-scott-model/)
 
 ## 実行例
 
