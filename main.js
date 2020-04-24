@@ -22,9 +22,9 @@ $(function() {
         'Dv': 1e-5,
         'feed': presets[default_preset].feed,
         'kill': presets[default_preset].kill,
-        'render_mode': 0,   // 0: 3D, 1: 2D
-        'boundary_condition': 0,    // 0: periodic, 1: dirichlet, 2: neumann
-        'target': 0,    // 0: draw u, 1: draw v
+        'render_mode': 0,                   // 0: 3D, 1: 2D
+        'boundary_condition': 0,            // 0: periodic, 1: dirichlet, 2: neumann
+        'target': 0,                        // 0: draw u, 1: draw v
     };
 
     const gl = document.getElementById('canvas').getContext('webgl2');

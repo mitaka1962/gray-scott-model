@@ -88,10 +88,7 @@ class GrayScottVisualizer {
                 vec3 light2 = normalize(vec3(-0.8, -1.2, 0.5));
                 diffuse += max(0.5 * decay(center) * dot(normal, light2), 0.0);
                 diffuse = clamp(diffuse, 0.0, 1.0);
-                // color = mix(vec3(0.63, 0.48, 0.3), vec3(1.0, 0.94, 0.89), diffuse);         // milky
-                // color = mix(vec3(0.168, 0.447, 0.588), vec3(0.733, 0.859, 0.922), diffuse); // sky
-                // color = mix(vec3(0.1, 0.0, 0.3), vec3(0.75, 0.6, 1.0), diffuse);            // poison
-                color = vec3(1.0) * diffuse;                                                // gray
+                color = vec3(1.0) * diffuse;
                 
                 vec3 reflect = reflect(-light1, normal);
                 vec3 eye = vec3(0.0, 0.0, 1.0);
