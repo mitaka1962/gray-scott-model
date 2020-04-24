@@ -21,6 +21,7 @@ $(function() {
         'Dv': 1e-5,
         'feed': presets[default_preset].feed,
         'kill': presets[default_preset].kill,
+        'render_mode': 0,   // 0: 3D, 1: 2D
         'boundary_condition': 0,    // 0: periodic, 1: dirichlet, 2: neumann
         'target': 0,    // 0: draw u, 1: draw v
     };
@@ -88,6 +89,19 @@ $(function() {
         });
         $('#ctrl_btn').text('Pause');
 
+        $('#three_d_btn').checkboxradio({
+            classes: {'ui-checkboxradio-label': 'ui-corner-left'},
+            icon: false,
+        });
+        $('#two_d_btn').checkboxradio({
+            classes: {'ui-checkboxradio-label': 'ui-corner-right'},
+            icon: false,
+        });
+        $('input[name="render"]').change(function (event) {
+            params.render_mode = event.target.value;
+        })
+        $('input[name="render"][value=' + params.render_mode + ']').attr('checked', true).change();
+
         $('#preset_select').change(function (event) {
             $('#feed_slider').slider('value', presets[event.target.value].feed);
             $('#kill_slider').slider('value', presets[event.target.value].kill);
@@ -111,10 +125,12 @@ $(function() {
                                          $('#kill_span').text(params.kill.toFixed(3));}
         });
         $('#kill_slider').slider('value', params.kill);
+
+        $('input[name="condition"]').checkboxradio({icon: false});
         $('input[name="condition"]').change(function (event) {
             params.boundary_condition = event.target.value;
         });
-        $('input[name="condition"][value=' + params.boundary_condition +']').prop('checked', true);
+        $('input[name="condition"][value=' + params.boundary_condition +']').attr('checked', true).change();
     }
 
     initUI();

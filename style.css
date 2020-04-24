@@ -20,13 +20,23 @@
     border: 1px solid black;
     align-self: flex-start;
 }
-.button_div {
+.ctrl_button_box {
     display: flex;
     margin-bottom: 1em;
 }
-.button_div button {
-    flex: 1 1 50%;
-    margin: 0 0.1em;
+.ctrl_button_box button {
+    width: 100%;
+    margin: 0.1em;
+}
+.render_radio_box {
+    display: flex;
+}
+.render_radio_box label {
+    margin-left: 0;
+    margin-right: 0;
+}
+.render_radio_box label[for="three_d_btn"] {
+    border-right: none;
 }
 .slider {
     margin: 0.2em 0;
@@ -35,17 +45,18 @@
     width: 100%;
     height: 1.6em;
 }
-.radio_box {
+.condition_radio_box {
     display: flex;
 }
-.radio_button {
-    margin-right: 2em;
+.condition_radio_box label {
+    width:100%;
+    margin: 0.1em;
 }
 .bold {
     font-weight: bold;
 }
 
-@media screen and (max-width: 849px) {
+@media screen and (max-width: 850px) {
 .wrapper {
     padding-left: 1em;
     padding-right: 1em;
@@ -61,5 +72,14 @@
     max-height: 450px;
     width: 100%;
     margin-bottom: 2em;
+}
+}
+
+@media screen and (max-width: 375px) {
+.ctrl_button_box {
+    flex-wrap: wrap;
+}
+.condition_radio_box {
+    flex-wrap: wrap;
 }
 }
