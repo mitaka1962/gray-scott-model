@@ -1,5 +1,6 @@
 $(function() {
-    let request_id = null;
+    let update_flag = true;
+    let update_step = 8;
     const presets = [
         { feed: 0.022, kill: 0.051 },   // stripe                                  
         { feed: 0.035, kill: 0.065 },   // spots
@@ -59,42 +60,38 @@ $(function() {
         return new Float32Array(uvTexture);
     }
 
-    const render = function() {
-        visualizer.draw();
-        request_id = requestAnimationFrame(render);
-    }
-
     const initUI = function() {
         $('#init_btn').button().click(function () {
-            if (request_id === null) {
+            if (!update_flag) {
+                update_step = 8;
+                update_flag = true;
                 $('#ctrl_btn').text('Pause');
-            } else {
-                cancelAnimationFrame(request_id);
-                request_id = null;
             }
             visualizer.setTexture(createInitTexture());
-            request_id = requestAnimationFrame(render);
         });
         $('#init_btn').text('Init');
 
         $('#ctrl_btn').button().click(function () {
-            if (request_id === null) {
-                request_id = requestAnimationFrame(render);
-                $('#ctrl_btn').text('Pause');
-            } else {
-                cancelAnimationFrame(request_id);
-                request_id = null;
+            if (update_flag) {
+                update_step = 0;
+                update_flag = false;
                 $('#ctrl_btn').text('Play');
+            } else {
+                update_step = 8;
+                update_flag = true;
+                $('#ctrl_btn').text('Pause');
             }
         });
         $('#ctrl_btn').text('Pause');
 
         $('#three_d_btn').checkboxradio({
-            classes: {'ui-checkboxradio-label': 'ui-corner-left'},
+            classes: {'ui-checkboxradio-label': 'ui-corner-left',
+                      'ui-checkboxradio-icon': 'ui-corner-left'},
             icon: false,
         });
         $('#two_d_btn').checkboxradio({
-            classes: {'ui-checkboxradio-label': 'ui-corner-right'},
+            classes: {'ui-checkboxradio-label': 'ui-corner-right',
+                      'ui-checkboxradio-icon': 'ui-corner-right'},
             icon: false,
         });
         $('input[name="render"]').change(function (event) {
@@ -135,5 +132,10 @@ $(function() {
 
     initUI();
     visualizer.setTexture(createInitTexture())
-    request_id = requestAnimationFrame(render);
+
+    const render = function() {
+        visualizer.draw(update_step);
+        requestAnimationFrame(render);
+    }
+    requestAnimationFrame(render);
 });
