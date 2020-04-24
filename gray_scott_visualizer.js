@@ -34,7 +34,7 @@ class GrayScottVisualizer {
         uniform sampler2D uDrawTex;
 
         float decay(float z) {
-            return 1.0 / pow(1.0 + (1.0 - z) / 1.4, 2.0);
+            return 1.0 / pow(1.0 + (1.0 - z) / 1.8, 2.0);
         }
 
         void main() {
@@ -84,8 +84,8 @@ class GrayScottVisualizer {
                 vec3 normal = normalize(cross(dx, dy));
 
                 vec3 light1 = normalize(vec3(1.0, 1.0, 1.0));
-                float diffuse = max(1.0 * decay(center) * dot(normal, light1), 0.0);
-                vec3 light2 = normalize(vec3(-0.8, -1.2, 0.5));
+                float diffuse = max(1.1 * decay(center) * dot(normal, light1), 0.0);
+                vec3 light2 = normalize(vec3(-0.8, -1.2, 0.3));
                 diffuse += max(0.5 * decay(center) * dot(normal, light2), 0.0);
                 diffuse = clamp(diffuse, 0.0, 1.0);
                 // color = mix(vec3(0.63, 0.48, 0.3), vec3(1.0, 0.94, 0.89), diffuse);         // milky
@@ -95,7 +95,7 @@ class GrayScottVisualizer {
                 
                 vec3 reflect = reflect(-light1, normal);
                 vec3 eye = vec3(0.0, 0.0, 1.0);
-                float x = 40.0;
+                float x = 30.0;
                 color += pow(max(0.0, dot(eye, reflect)), x) * tanh(x / 10.0);
             } else {
                 vec2 uv = texture(uDrawTex, vTexCoord).rg;

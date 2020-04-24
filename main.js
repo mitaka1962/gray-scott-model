@@ -14,8 +14,8 @@ $(function() {
     ];
     const default_preset = 0;
     const params = {
-        'width': 512,
-        'height': 512,
+        'width': 380,
+        'height': 380,
         'dx': 0.01,
         'dt': 1,
         'Du': 2e-5,
