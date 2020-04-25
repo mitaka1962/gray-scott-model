@@ -26,6 +26,7 @@ class GrayScottVisualizer {
 
         uniform int uRenderMode;
         uniform int uTarget;
+        uniform int uColor;
         uniform int uBoundaryCondition;
         uniform vec2 uTextureSize;
 
@@ -34,7 +35,7 @@ class GrayScottVisualizer {
         uniform sampler2D uDrawTex;
 
         float decay(float z) {
-            return 1.0 / pow(1.0 + (1.0 - z) / 1.8, 2.0);
+            return 1.0 / pow(1.0 + (1.0 - z) / 2.0, 2.0);
         }
 
         void main() {
@@ -88,15 +89,24 @@ class GrayScottVisualizer {
                 vec3 light2 = normalize(vec3(-0.8, -1.2, 0.3));
                 diffuse += max(0.5 * decay(center) * dot(normal, light2), 0.0);
                 diffuse = clamp(diffuse, 0.0, 1.0);
-                // color = mix(vec3(0.63, 0.48, 0.3), vec3(1.0, 0.94, 0.89), diffuse);         // milky
-                // color = mix(vec3(0.168, 0.447, 0.588), vec3(0.733, 0.859, 0.922), diffuse); // sky
-                // color = mix(vec3(0.1, 0.0, 0.3), vec3(0.75, 0.6, 1.0), diffuse);            // poison
-                color = vec3(1.0) * diffuse;                                                // gray
+
+                if (uColor == 0) {
+                    // sky
+                    color = mix(vec3(0.08, 0.35, 0.5), vec3(0.75, 0.88, 0.96), diffuse);
+                } else if (uColor == 1) {
+                    // milky
+                    color = mix(vec3(0.6, 0.4, 0.25), vec3(1.0, 0.94, 0.89), diffuse);
+                } else if (uColor == 2) {
+                    // poison
+                    color = mix(vec3(0.1, 0.0, 0.3), vec3(0.75, 0.6, 1.0), diffuse);
+                } else {
+                    // greyscale
+                    color = vec3(1.0) * diffuse;
+                }
                 
                 vec3 reflect = reflect(-light1, normal);
                 vec3 eye = vec3(0.0, 0.0, 1.0);
-                float x = 30.0;
-                color += pow(max(0.0, dot(eye, reflect)), x) * tanh(x / 10.0);
+                color += pow(max(0.0, dot(eye, reflect)), 40.0);
             } else {
                 vec2 uv = texture(uDrawTex, vTexCoord).rg;
                 color = (uTarget == 1) ? vec3(uv.g) : vec3(uv.r);
@@ -183,6 +193,7 @@ class GrayScottVisualizer {
                 'uDrawTex': this.gl.getUniformLocation(this.drawShaderProgram, "uDrawTex"),
                 'uRenderMode': this.gl.getUniformLocation(this.drawShaderProgram, "uRenderMode"),
                 'uTarget': this.gl.getUniformLocation(this.drawShaderProgram, "uTarget"),
+                'uColor': this.gl.getUniformLocation(this.drawShaderProgram, "uColor"),
                 'uBoundaryCondition': this.gl.getUniformLocation(this.drawShaderProgram, "uBoundaryCondition"),
                 'uTextureSize': this.gl.getUniformLocation(this.drawShaderProgram, "uTextureSize"),
             }
@@ -367,7 +378,8 @@ class GrayScottVisualizer {
 
     _setDrawProgramUniforms() {
         this.gl.uniform1i(this.drawProgramLocations.uniform.uRenderMode, this.params.render_mode);
-        this.gl.uniform1i(this.drawProgramLocations.uniform.uTarget, this.params.target);
+        this.gl.uniform1i(this.drawProgramLocations.uniform.uTarget, this.params.render_target);
+        this.gl.uniform1i(this.drawProgramLocations.uniform.uColor, this.params.render_color);
         this.gl.uniform1i(this.drawProgramLocations.uniform.uBoundaryCondition, this.params.boundary_condition);
         this.gl.uniform2f(this.drawProgramLocations.uniform.uTextureSize,
                           this.params.width, this.params.height);

@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <title>Gray-Scott Reaction Diffusion Model</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="style.css">
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
+    <link rel="stylesheet" type="text/css" href="style.css">
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <script type="text/javascript" src="gray_scott_visualizer.js"></script>
@@ -23,14 +23,28 @@
                     <button id="ctrl_btn" type="button"></button>
                 </div>
                 <p class="bold">Rendering</p>
-                <div class="render_radio_box">
-                    <label for="three_d_btn">3D</label>
-                    <input id="three_d_btn" type="radio" name="render" value="0">
-                    <label for="two_d_btn">2D</label>
-                    <input id="two_d_btn" type="radio" name="render" value="1">
+                <div class="render_option_box">
+                    <div class="render_radio_box">
+                        <label for="three_d_btn">3D</label>
+                        <input id="three_d_btn" type="radio" name="render" value="0">
+                        <label for="two_d_btn">2D</label>
+                        <input id="two_d_btn" type="radio" name="render" value="1">
+                    </div>
+                    <div class="render_radio_box">
+                        <label for="u_render_btn">U</label>
+                        <input id="u_render_btn" type="radio" name="uv_render" value="0">
+                        <label for="v_render_btn">V</label>
+                        <input id="v_render_btn" type="radio" name="uv_render" value="1">
+                    </div>
+                    <select id="render_color_select">
+                        <option value="0">sky</option>
+                        <option value="1">milky</option>
+                        <option value="2">poison</option>
+                        <option value="3">grey scale</option>
+                    </select>
                 </div>
                 <p class="bold">Presets</p>
-                <select id="preset_select" class="ui-corner-all">
+                <select id="preset_select">
                     <option value="0">stripe</option>
                     <option value="1">spots</option>
                     <option value="2">wandering bubbles</option>

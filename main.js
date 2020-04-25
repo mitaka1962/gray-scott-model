@@ -22,9 +22,10 @@ $(function() {
         'Dv': 1e-5,
         'feed': presets[default_preset].feed,
         'kill': presets[default_preset].kill,
-        'render_mode': 0,   // 0: 3D, 1: 2D
+        'render_mode': 0,           // 0: 3D, 1: 2D
+        'render_target': 0,         // 0: draw u, 1: draw v
+        'render_color': 0,          // 0: sky, 1: milky, 2: poison, 3: greyscale
         'boundary_condition': 0,    // 0: periodic, 1: dirichlet, 2: neumann
-        'target': 0,    // 0: draw u, 1: draw v
     };
 
     const gl = document.getElementById('canvas').getContext('webgl2');
@@ -94,16 +95,49 @@ $(function() {
                       'ui-checkboxradio-icon': 'ui-corner-right'},
             icon: false,
         });
-        $('input[name="render"]').change(function (event) {
-            params.render_mode = event.target.value;
-        })
-        $('input[name="render"][value=' + params.render_mode + ']').attr('checked', true).change();
 
-        $('#preset_select').change(function (event) {
-            $('#feed_slider').slider('value', presets[event.target.value].feed);
-            $('#kill_slider').slider('value', presets[event.target.value].kill);
+        $('#u_render_btn').checkboxradio({
+            classes: {'ui-checkboxradio-label': 'ui-corner-left',
+                      'ui-checkboxradio-icon': 'ui-corner-left'},
+            icon: false,
+        });
+        $('#v_render_btn').checkboxradio({
+            classes: {'ui-checkboxradio-label': 'ui-corner-right',
+                      'ui-checkboxradio-icon': 'ui-corner-right'},
+            icon: false,
+        });
+        $('input[name="uv_render"]').change(function (event) {
+            params.render_target = event.target.value;
+        })
+        $('input[name="uv_render"][value=' + params.render_target + ']').attr('checked', true).change();
+
+        $('#render_color_select').selectmenu({
+            select: function (event, ui) {
+                params.render_color = ui.item.value;
+            },
+        });
+        $('#render_color_select').val(params.render_color);
+        $('#render_color_select').selectmenu('refresh');
+
+        $('#preset_select').selectmenu({
+            select: function (event, ui) {
+                $('#feed_slider').slider('value', presets[ui.item.value].feed);
+                $('#kill_slider').slider('value', presets[ui.item.value].kill);
+            },
         });
         $('#preset_select').val(default_preset);
+        $('#preset_select').selectmenu('refresh');
+
+        $('input[name="render"]').change(function (event) {
+            const val = event.target.value
+            params.render_mode = val;
+            if (val == 0) {
+                $('#render_color_select').selectmenu('enable');
+            } else {
+                $('#render_color_select').selectmenu('disable');
+            }
+        })
+        $('input[name="render"][value=' + params.render_mode + ']').attr('checked', true).change();
 
         $('#feed_slider').slider({
             value: params.feed, min: 0.000, max: 0.050, step: 0.001,
