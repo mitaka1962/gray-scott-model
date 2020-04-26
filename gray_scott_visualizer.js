@@ -62,10 +62,10 @@ class GrayScottVisualizer {
 
                 if (uBoundaryCondition == 1) {
                     // dirichlet boundary condition
-                    uv1 = (dec_x < 0.0) ? vec2(1.0, 0.0) : uv1;
-                    uv2 = (inc_x > 1.0) ? vec2(1.0, 0.0) : uv2;
-                    uv3 = (dec_y < 0.0) ? vec2(1.0, 0.0) : uv3;
-                    uv4 = (inc_y > 1.0) ? vec2(1.0, 0.0) : uv4;
+                    uv1 = (dec_x < 0.0) ? vec2(2.0 - uv.r, -uv.g) : uv1;
+                    uv2 = (inc_x > 1.0) ? vec2(2.0 - uv.r, -uv.g) : uv2;
+                    uv3 = (dec_y < 0.0) ? vec2(2.0 - uv.r, -uv.g) : uv3;
+                    uv4 = (inc_y > 1.0) ? vec2(2.0 - uv.r, -uv.g) : uv4;
                 } else if (uBoundaryCondition == 2) {
                     // neumann boundary condition
                     uv1 = (dec_x < 0.0) ? uv : uv1;
@@ -155,10 +155,10 @@ class GrayScottVisualizer {
 
             if (uBoundaryCondition == 1) {
                 // dirichlet boundary condition
-                uv1 = (dec_x < 0.0) ? vec2(1.0, 0.0) : uv1;
-                uv2 = (inc_x > 1.0) ? vec2(1.0, 0.0) : uv2;
-                uv3 = (dec_y < 0.0) ? vec2(1.0, 0.0) : uv3;
-                uv4 = (inc_y > 1.0) ? vec2(1.0, 0.0) : uv4;
+                uv1 = (dec_x < 0.0) ? vec2(2.0 - uv.r, -uv.g) : uv1;
+                uv2 = (inc_x > 1.0) ? vec2(2.0 - uv.r, -uv.g) : uv2;
+                uv3 = (dec_y < 0.0) ? vec2(2.0 - uv.r, -uv.g) : uv3;
+                uv4 = (inc_y > 1.0) ? vec2(2.0 - uv.r, -uv.g) : uv4;
             } else if (uBoundaryCondition == 2) {
                 // neumann boundary condition
                 uv1 = (dec_x < 0.0) ? uv : uv1;
